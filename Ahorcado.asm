@@ -1,6 +1,6 @@
 section .data
 
-    mensaje db 'Hola Mundo', 0xA
+    mensaje db 'Hola Mundo'
     longitud equ $ - mensaje
 
 section .text
