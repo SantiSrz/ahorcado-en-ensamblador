@@ -5,10 +5,18 @@ section .data
     palabra db '______'
     longitud_2 equ $ - palabra
 
-    salto db 0x0A
-
     solucion db 'MADRID'
     longitud_3 equ $ - solucion
+
+    intentos db 'Numero de intentos restantes: '
+    longitud_4 equ $ - intentos
+
+    numero_contador db ' ', 0x0A
+    longitud_5 equ $ - numero_contador
+
+    salto db 0x0A
+
+    vidas db 6
 
 section .bss
     letra resb 1
@@ -25,8 +33,20 @@ _start:
     mov edx, longitud_2
     call print
 
+    mov al, byte [vidas]   
+    add al, 48             
+    mov [numero_contador], al
+
     mov ecx, salto
     mov edx, 1
+    call print
+
+    mov ecx, intentos
+    mov edx, longitud_4
+    call print
+
+    mov ecx, numero_contador
+    mov edx, longitud_5
     call print
 
     mov eax, 1
