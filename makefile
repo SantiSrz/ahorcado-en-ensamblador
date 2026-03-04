@@ -1,4 +1,4 @@
-NAME = Caracter
+NAME = Ahorcado
 
 all: $(NAME)
 
