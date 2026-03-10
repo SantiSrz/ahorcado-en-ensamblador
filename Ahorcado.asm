@@ -33,8 +33,8 @@ _start:
     mov edx, longitud_2
     call print
 
-    mov al, byte [vidas]   
-    add al, 48             
+    mov al, byte [vidas]
+    add al, 48
     mov [numero_contador], al
 
     mov ecx, salto
@@ -49,6 +49,41 @@ _start:
     mov edx, longitud_5
     call print
 
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, letra
+    mov edx, 1
+    int 0x80
+
+    mov esi, solucion
+    mov edi, palabra
+    mov ecx, longitud_3
+    mov bl, 0
+
+bucle_comparacion:
+    mov al, byte [esi]
+    cmp al, byte [letra]
+    jne no_coincide
+
+    mov byte [edi], al
+    mov bl, 1
+
+no_coincide:
+    inc esi
+    inc edi
+    loop bucle_comparacion
+
+    cmp bl, 0
+    je fallo
+
+    jmp fin
+
+fallo:
+    mov al, byte [vidas]
+    dec al
+    mov byte [vidas], al
+
+fin:
     mov eax, 1
     mov ebx, 0
     int 0x80
