@@ -94,6 +94,14 @@ fallo:
     dec byte [vidas]
 
 fin:
+    mov ecx, palabra
+    mov edx, longitud_2
+    call print
+
+    mov ecx, salto
+    mov edx, 1
+    call print
+
     mov eax, 1
     mov ebx, 0
     int 0x80
