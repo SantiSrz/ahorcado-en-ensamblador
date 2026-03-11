@@ -20,10 +20,11 @@ section .data
 
 section .bss
     letra resb 1
-    espacio_restante resb 1
+    basura resb 1
 
 section .text
     global _start
+
 _start:
     mov ecx, mensaje
     mov edx, longitud_1
@@ -55,6 +56,17 @@ _start:
     mov edx, 1
     int 0x80
 
+limpiar_buffer:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, basura
+    mov edx, 1
+    int 0x80
+
+    mov al, byte [basura]
+    cmp al, 0x0A
+    jne limpiar_buffer
+
     mov esi, solucion
     mov edi, palabra
     mov ecx, longitud_3
@@ -79,9 +91,7 @@ no_coincide:
     jmp fin
 
 fallo:
-    mov al, byte [vidas]
-    dec al
-    mov byte [vidas], al
+    dec byte [vidas]
 
 fin:
     mov eax, 1
