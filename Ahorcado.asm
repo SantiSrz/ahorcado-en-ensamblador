@@ -57,6 +57,8 @@ limpiar_buffer:
     cmp al, 0x0A
     jne limpiar_buffer
 
+    call a_mayuscula
+
     mov esi, solucion
     mov edi, palabra
     mov ecx, longitud_3
@@ -102,6 +104,17 @@ fin:
     mov eax, 1
     xor ebx, ebx
     int 0x80
+
+a_mayuscula:
+    mov al, byte [letra]
+    cmp al, 0x61
+    jl .fin
+    cmp al, 0x7A
+    jg .fin
+    sub al, 0x20
+    mov byte [letra], al
+.fin:
+    ret
 
 print:
     mov eax, 4
