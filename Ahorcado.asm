@@ -1,16 +1,28 @@
 section .data
     mensaje db 'Dime una letra: '
     longitud_1 equ $ - mensaje
+
     palabra db '______', 0x0A
     longitud_2 equ $ - palabra
+
     solucion db 'MADRID'
     longitud_3 equ $ - solucion
+
     intentos db 'Numero de intentos restantes: '
     longitud_4 equ $ - intentos
+
     numero_contador db ' ', 0x0A
     longitud_5 equ $ - numero_contador
+
     salto db 0x0A
+
     vidas db 6
+
+    msj_victoria db 'Enhorabuena, has adivinado la palabra.', 0x0A
+    longitud_6 equ $ - msj_victoria
+
+    msj_derrota db 'Lo siento, no has logrado adivinar la palabra.', 0x0A
+    longitud_7 equ $ - msj_derrota
 
 section .bss
     letra resb 1
@@ -53,6 +65,7 @@ limpiar_buffer:
     mov ecx, basura
     mov edx, 1
     int 0x80
+    
     mov al, byte [basura]
     cmp al, 0x0A
     jne limpiar_buffer
@@ -70,6 +83,7 @@ bucle_comparacion:
     jne no_coincide
     mov byte [edi], al
     mov bl, 1
+
 no_coincide:
     inc esi
     inc edi
@@ -78,29 +92,32 @@ no_coincide:
     cmp bl, 0
     jne verificar_fin
     dec byte [vidas]
-    jz fin
+    jz derrota
 
 verificar_fin:
     mov ecx, longitud_3
     mov edi, palabra
     mov al, '_'
     xor edx, edx
+
 revisar_guiones:
     cmp byte [edi], al
     jne letra_revelada
     inc edx
+
 letra_revelada:
     inc edi
     loop revisar_guiones
 
     cmp edx, 0
-    je fin
+    je victoria
     jmp game_loop
 
 fin:
     mov ecx, palabra
     mov edx, longitud_2
     call print
+
     mov eax, 1
     xor ebx, ebx
     int 0x80
@@ -121,3 +138,15 @@ print:
     mov ebx, 1
     int 0x80
     ret
+
+derrota:
+    mov ecx, msj_derrota
+    mov edx, longitud_7
+    call print
+    jmp fin
+
+victoria:
+    mov ecx, msj_victoria
+    mov edx, longitud_6
+    call print
+    jmp fin
