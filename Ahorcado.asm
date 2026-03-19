@@ -2,12 +2,6 @@ section .data
     mensaje db 'Dime una letra: '
     longitud_1 equ $ - mensaje
 
-    palabra db '______', 0x0A
-    longitud_2 equ $ - palabra
-
-    solucion db 'MADRID'
-    longitud_3 equ $ - solucion
-
     intentos db 'Numero de intentos restantes: '
     longitud_4 equ $ - intentos
 
@@ -15,8 +9,7 @@ section .data
     longitud_5 equ $ - numero_contador
 
     salto db 0x0A
-
-    vidas db 6
+    vidas_iniciales db 6
 
     msj_victoria db 'Enhorabuena, has adivinado la palabra.', 0x0A
     longitud_6 equ $ - msj_victoria
@@ -24,18 +17,66 @@ section .data
     msj_derrota db 'Lo siento, no has logrado adivinar la palabra.', 0x0A
     longitud_7 equ $ - msj_derrota
 
+    banco   db 'MADRID', 0, 0, 0, 0
+            db 'CPU', 0, 0, 0, 0, 0, 0, 0
+            db 'LINUX', 0, 0, 0, 0, 0
+            db 'MEMORIA', 0, 0, 0
+            db 'TECLADO', 0, 0, 0
+    
+    num_palabras equ 5
+    tamano_bloque equ 10
+
 section .bss
     letra resb 1
     basura resb 1
+    vidas resb 1
+    palabra_secreta resd 1
+    longitud_palabra resb 1
+    tablero resb 10
 
 section .text
     global _start
 
 _start:
+    mov al, byte [vidas_iniciales]
+    mov byte [vidas], al
+
+    mov eax, 13
+    xor ebx, ebx
+    int 0x80
+
+    xor edx, edx
+    mov ecx, num_palabras
+    div ecx
+
+    mov eax, edx
+    mov ecx, tamano_bloque
+    mul ecx
+    mov esi, banco
+    add esi, eax
+    mov [palabra_secreta], esi
+
+    mov edi, tablero
+    xor ecx, ecx
+
+medir_palabra:
+    mov al, byte [esi + ecx]
+    cmp al, 0
+    je fin_medir
+    mov byte [edi + ecx], '_'
+    inc ecx
+    jmp medir_palabra
+
+fin_medir:
+    mov byte [longitud_palabra], cl
 
 game_loop:
-    mov ecx, palabra
-    mov edx, longitud_2
+    mov ecx, tablero
+    movzx edx, byte [longitud_palabra]
+    call print
+    
+    mov ecx, salto
+    mov edx, 1
     call print
 
     mov ecx, intentos
@@ -72,9 +113,9 @@ limpiar_buffer:
 
     call a_mayuscula
 
-    mov esi, solucion
-    mov edi, palabra
-    mov ecx, longitud_3
+    mov esi, [palabra_secreta]
+    mov edi, tablero
+    movzx ecx, byte [longitud_palabra]
     mov bl, 0
 
 bucle_comparacion:
@@ -95,8 +136,8 @@ no_coincide:
     jz derrota
 
 verificar_fin:
-    mov ecx, longitud_3
-    mov edi, palabra
+    movzx ecx, byte [longitud_palabra]
+    mov edi, tablero
     mov al, '_'
     xor edx, edx
 
@@ -114,10 +155,6 @@ letra_revelada:
     jmp game_loop
 
 fin:
-    mov ecx, palabra
-    mov edx, longitud_2
-    call print
-
     mov eax, 1
     xor ebx, ebx
     int 0x80
@@ -146,6 +183,14 @@ derrota:
     jmp fin
 
 victoria:
+    mov ecx, tablero
+    movzx edx, byte [longitud_palabra]
+    call print
+    
+    mov ecx, salto
+    mov edx, 1
+    call print
+    
     mov ecx, msj_victoria
     mov edx, longitud_6
     call print
