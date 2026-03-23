@@ -17,6 +17,9 @@ section .data
     msj_derrota db 'Lo siento, no has logrado adivinar la palabra.', 0x0A
     longitud_7 equ $ - msj_derrota
 
+    msj_palabra_era db 'La palabra era: '
+    longitud_8 equ $ - msj_palabra_era
+
     banco   db 'MADRID', 0, 0, 0, 0
             db 'CPU', 0, 0, 0, 0, 0, 0, 0
             db 'LINUX', 0, 0, 0, 0, 0
@@ -180,6 +183,19 @@ derrota:
     mov ecx, msj_derrota
     mov edx, longitud_7
     call print
+
+    mov ecx, msj_palabra_era
+    mov edx, longitud_8
+    call print
+
+    mov ecx, [palabra_secreta]
+    movzx edx, byte [longitud_palabra]
+    call print
+
+    mov ecx, salto
+    mov edx, 1
+    call print
+
     jmp fin
 
 victoria:
